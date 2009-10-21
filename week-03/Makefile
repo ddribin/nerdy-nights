@@ -3,6 +3,7 @@ SOURCES	= background.asm
 
 
 AS	= ca65
+ASFLAGS	= -l
 LD	= ld65
 LDFLAGS	= -t nes -m $(PROGRAM).map
 
