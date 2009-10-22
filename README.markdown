@@ -28,6 +28,8 @@ The linker configuration file, included at the end of this document, essentially
 The nes.cfg File
 ================
 
+Here's the `nes.cfg` as shipping with cc65 version 2.13.0.
+
 <pre>
 MEMORY {
 
