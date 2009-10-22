@@ -1,3 +1,5 @@
+-*- markdown -*-
+
 The Nerdy Nights ca65 Remix
 ===========================
 
@@ -12,7 +14,7 @@ Most of the differences between the NESASM code and ca65 are straight syntax dif
 
 The biggest difference is that ca65 uses a linker to place code at specific addresses, instead of `.org` statements.  The linker uses segments to separate code that belongs at different addresses, and defines this mapping in a configuration file.  The configuration file used when running `ld65` with the `-t nes`, it uses the `nes.cfg` linker configuration file.
 
-The linker configuration file, included at the end of this document, essentially defines the iNES mapper and parameters we need to set in the header.  For example, the `ROM0` and `ROM2` memory regions require that we use mapper 0 (NROM) with 32KB of PRG ROM and 8KB of CHR ROM.  Thus, our iNES header is defined as:
+The linker configuration file, included at the end of this document, essentially defines the iNES mapper and parameters we need to set in the header.  For example, the `ROM0` and `ROM2` memory regions require that we use mapper 0 (NROM) with 32KB of PRG-ROM and 8KB of CHR-ROM.  Thus, our iNES header is defined as:
 
 <pre>
 .segment "HEADER"
