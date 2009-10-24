@@ -16,6 +16,6 @@ $(PROGRAM).nes: $(SOURCES:.asm=.o)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 clean:
-	$(RM) *.o $(PROGRAM).nes $(PROGRAM).map
+	$(RM) *.o $(PROGRAM).nes $(PROGRAM).map $(SOURCES:.asm=.lst)
 
 .PHONY: all clean
