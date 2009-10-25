@@ -61,19 +61,6 @@ load_palettes:
 	cpx	#$20
 	bne	@loop		; if x = $20, 32 bytes copied, all done
 
-	lda	#$80
-	sta	$0200		; put sprite 0 in center ($80) of screen vert
-	sta	$0203		; put sprite 0 in center ($80) of screen horiz
-	lda	#$00
-	sta	$0201		; tile number = 0
-	sta	$0202		; color = 0, no flipping
-
-	lda	#%10000000	; enable NMI, sprites from Pattern Table 0
-	sta	$2000
-
-	lda	#%00010000	; enable sprites
-	sta	$2001
-
 load_sprites:
 	ldx	#$00		; start at 0
 @loop:
@@ -83,8 +70,14 @@ load_sprites:
 	cpx	#$20		; copmare x to hex $20, decimal 32
 	bne	@loop
 	
-@forever:
-	jmp	@forever
+	lda	#%10000000	; enable NMI, sprites from Pattern Table 0
+	sta	$2000
+
+	lda	#%00010000	; enable sprites
+	sta	$2001
+	
+forever:
+	jmp	forever
 
 nmi:
 	lda	#$00		; set the low byte (00) of the RAM address
