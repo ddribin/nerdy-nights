@@ -46,28 +46,27 @@ reset:
 	bit	$2002
 	bpl	@vblankwait2
 
-	
-.if 1
-	;; Need setup a basic palette for Nestopia. Not needed for FCEU*.
+clear_palette:	
+	;; Need clear both palettes to $00. Needed for Nestopia. Not
+	;; needed for FCEU* as they're already $00 on powerup.
+	lda	$2002		; Read PPU status to reset PPU address
 	lda	#$3f		; Set PPU address to BG palette RAM ($3F00)
 	sta	$2006
 	lda	#$00
-	sta	$2006
+	sta 	$2006
 
-	lda	#$00
+	ldx	#$20		; Loop $20 times (up to $3F20)
+	lda	#$00		; Set each entry to $00
+@loop:
 	sta	$2007
-	sta	$2007
-	
-@vblankwait3:
-	bit	$2002
-	bpl	@vblankwait3
-.endif
-	
+	dex
+	bne	@loop
+
 	lda	#%10000000	; intensify blues
 	sta	$2001
 
-@forever:
-	jmp	@forever
+forever:
+	jmp	forever
 
 nmi:
 	rti
