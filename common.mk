@@ -11,7 +11,10 @@ all: $(PROGRAM).nes
 $(PROGRAM).nes: $(SOURCES:.asm=.o)
 	$(LD) $(LDFLAGS) $^ -o $@
 
+open: $(PROGRAM).nes
+	open $(PROGRAM).nes
+
 clean:
 	$(RM) *.o $(PROGRAM).nes $(PROGRAM).map $(SOURCES:.asm=.lst)
 
-.PHONY: all clean
+.PHONY: all clean open
