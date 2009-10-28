@@ -51,10 +51,10 @@ vblankwait2:
 
 clear_nametables:
 	lda	$2002		; read PPU status to reset the high/low latch
-	lda	#$20		; clear PPU memory starting from $2000
-	sta	$2006
-	lda	#$00
-	sta	$2006
+	lda	#$20		; write the high byte of $2000
+	sta	$2006		;  .
+	lda	#$00		; write the low byte of $2000
+	sta	$2006		;  .
 	ldx	#$08		; prepare to fill 8 pages ($800 bytes)
 	ldy	#$00		;  x/y is 16-bit counter, high byte in x
 	lda	#$27		; fill with tile $27 (a solid box)
@@ -171,7 +171,7 @@ read_b:
 	sec			; make sure the carry flag is set
 	sbc	#$01		; a = a - 1
 	sta	$0203		; save sprite 0 X-position
-	sta	$020b
+	sta	$020b		; save sprite 2 X-position
 
 	lda	$0207		; load sprite 1 X-position
 	sec			; add one to it
