@@ -203,7 +203,6 @@ palette:
 	.byte	$22,$1C,$15,$14
  	.byte	$22,$02,$38,$3C
 	.byte	$22,$1C,$15,$14
-@end:
 
 sprites:
 	;;      vert tile attr horiz
