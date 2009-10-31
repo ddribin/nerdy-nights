@@ -12,12 +12,12 @@
 
 .segment "CODE"
 
+	;; Execution starts here after power up or reset
 reset:
-
 	sei			; disable IRQs
 	cld			; disable decimal mode
-	ldx	#$40
-	stx	$4017		; dsiable APU frame IRQ
+	ldx	#$40		; disable APU frame IRQ
+	stx	$4017		;  .
 	ldx	#$ff		; Set up stack
 	txs			;  .
 	inx			; now X = 0
@@ -25,11 +25,12 @@ reset:
 	stx	$2001		; disable rendering
 	stx	$4010		; disable DMC IRQs
 
-	;; first wait for vblank to make sure PPU is ready
+	;; First wait for vblank to make sure PPU is ready.
 vblankwait1:
 	bit	$2002
 	bpl	vblankwait1
 
+	;; Initialize RAM $0000 - $07ff (2 KB).
 clear_memory:
 	lda	#$00
 	sta	$0000, x
@@ -39,39 +40,45 @@ clear_memory:
 	sta	$0500, x
 	sta	$0600, x
 	sta	$0700, x
-	lda	#$fe
-	sta	$0200, x	; move all sprites off screen
+	lda	#$fe		; sprites are located at $0200 - $02ff
+	sta	$0200, x	; $fe moves all sprites off screen
 	inx
 	bne	clear_memory
 
-	;; second wait for vblank, PPU is ready after this
+	;; Second wait for vblank, PPU is ready after this.
 vblankwait2:
 	bit	$2002
 	bpl	vblankwait2
 
+	;; The color palettes are located in VRAM at $2000 - $201ff.
+	;; Load from palette in ROM.
 load_palettes:
 	lda	$2002		; read PPU status to reset the high/low latch
-	lda	#$3f
-	sta	$2006
-	lda	#$00
-	sta	$2006
-	ldx	#$00
+	lda	#$3f		; write the high byte of $3f00
+	sta	$2006		;  .
+	lda	#$00		; write the low byte of $3f00
+	sta	$2006		;  .
+	ldx	#$00		; x = 0
 @loop:
-	lda	palette, x	; load palette byte
+	lda	palette, x	; load palette byte from ROM (palette + x)
 	sta	$2007		; write to PPU
-	inx			; set index to next byte
-	cpx	#$20
-	bne	@loop		; if x = $20, 32 bytes copied, all done
+	inx			; x = x + 1
+	cpx	#$20		; x == $20?
+	bne	@loop		; Yes, jump to @loop, no, fall through
 
+	;; Sprites are located in RAM at $0200 - $02ff. We are only
+	;; using 4 of the 64 sprites, $0200 - $0210. Load from sprites
+	;; in ROM.
 load_sprites:
-	ldx	#$00		; start at 0
+	ldx	#$00		; x = 0
 @loop:
-	lda	sprites, x	; load data from address (sprites + x)
+	lda	sprites, x	; load byte from ROM address (sprites + x)
 	sta	$0200, x	; store into RAM address ($0200 + x)
 	inx			; x = x + 1
-	cpx	#$20		; copmare x to hex $20, decimal 32
-	bne	@loop
-	
+	cpx	#$10		; x == $10?
+	bne	@loop		; Yes, jump to @loop, no, fall through
+
+	;; Setup PPU to display sprites
 	lda	#%10000000	; enable NMI, sprites from Pattern Table 0
 	sta	$2000
 
@@ -81,7 +88,10 @@ load_sprites:
 forever:
 	jmp	forever
 
+	;; NMI gets called 60 times per second (on NTSC) via an
+	;; interrupt when the PPU vblank starts.
 nmi:
+	;; Copy sprites at $0200 in RAM into VRAM via DMA.
 	lda	#$00		; set the low byte (00) of the RAM address
 	sta	$2003
 	lda	#$02		; set the high byte (02) of the RAM address 
@@ -113,10 +123,12 @@ sprites:
 .segment "VECTORS"
 
 	.word	0, 0, 0		; Unused, but needed to advance PC to $fffa.
-	;; When an NMI happens (once per frame if enabled) the label nmi:
+	
+	;; When an NMI happens (once per frame if enabled), it will
+	;; jump to the label nmi.
 	.word	nmi
 	;; When the processor first turns on or is reset, it will jump to the
-	;; label reset:
+	;; label reset.
 	.word	reset
 	;; External interrupt IRQ is not used in this tutorial 
 	.word	0
@@ -124,5 +136,5 @@ sprites:
 ;;;;;;;;;;;;;;  
   
 .segment "CHARS"
-
+	;; CHR-ROM, 8 KB
 	.incbin	"mario.chr"	; includes 8KB graphics from SMB1
