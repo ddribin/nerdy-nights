@@ -17,10 +17,10 @@ reset:
 	cld			; disable decimal mode
 
 	lda	#%00000001
-	sta	$4015		; enable Square
+	sta	$4015		; enable Square 1
 
-	;; square 1
-	;;  Duty 10, Length Counter disabled, Saq Envelopes disabled, Volume F
+	;; Square 1: Duty 00, Length Counter disabled,
+	;; Saw Envelopes disabled, Volume 8
 	lda	#%10111111
 	sta	$4000
     

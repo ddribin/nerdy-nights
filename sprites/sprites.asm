@@ -13,7 +13,6 @@
 .segment "CODE"
 
 reset:
-
 	sei			; disable IRQs
 	cld			; disable decimal mode
 	ldx	#$40
