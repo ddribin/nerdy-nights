@@ -3,18 +3,18 @@
 The Nerdy Nights ca65 Remix
 ===========================
 
-The [Nerdy Nights][nn] is a series of tutorials on how to program for the NES on the Nintendo Age forums.  The walk the user through basic graphics and sound applications, with nice descriptions and sample projects.
+The [Nerdy Nights][nn] is a series of tutorials on how to program for the NES on the Nintendo Age forums.  They walk the user through basic graphics and sound applications, with nice descriptions and sample projects.
 
-The tutorials where originally written in [NESASM][nesasm] and tested on [FCEU XD SP][fceuxdsp].  However, these work best primarily on Windows, and I use Mac OS X.  This is the Nerdy Nights NES tutorials, ported to ca65, the macro assembler included with the [cc65 compiler][cc65] and tested on [Nestopia][nestopia].  I also prefer that ca65 uses a linker, and code can be separated out into multiple source files.
+The tutorials where originally written in [NESASM][nesasm] and tested on [FCEU XD SP][fceuxdsp].  However, these work best primarily on Windows, and I use Mac OS X.  This is the Nerdy Nights NES tutorials, ported to ca65, the macro assembler included with the [cc65 compiler][cc65] and tested on [Nestopia][nestopia].  I also prefer that ca65 uses a linker, since it's more flexible than a single source file.
 
 Differences from NESASM Source
 ==============================
 
 Most of the differences between the NESASM code and ca65 are straight syntax differences.  For example, ca65 doesn't support `.dw` and uses `.word` instead.  ca65 also does not support the NES extensions, like the iNES header macros, like `.inesprg`.  We have to specify the exact bytes used for the iNES header.  I also prefer coding in all lower case.
 
-The biggest difference is that ca65 uses a linker to place code at specific addresses, instead of `.org` statements.  The linker uses segments to separate code that belongs at different addresses, and defines this mapping in a configuration file.  The configuration file used when running `ld65` with the `-t nes`, it uses the `nes.cfg` linker configuration file.
+The biggest difference is that ca65 uses a linker to place code at specific addresses, instead of `.org` statements.  The linker uses segments to separate code that belongs at different addresses, and defines this mapping in a configuration file.  The configuration file used when running `ld65` with the `-t nes`, it uses the `nes.cfg` linker configuration file.  In order to keep things simple, all apps use the default NES linker configuration file.
 
-The linker configuration file, included at the end of this document, essentially defines the iNES mapper and parameters we need to set in the header.  For example, the `ROM0` and `ROM2` memory regions require that we use mapper 0 (NROM) with 32KB of PRG-ROM and 8KB of CHR-ROM.  Thus, our iNES header is defined as:
+The NES linker configuration file, included at the end of this document, essentially defines the iNES mapper and parameters we need to set in the header.  For example, the `ROM0` and `ROM2` memory regions require that we use mapper 0 (NROM) with 32KB of PRG-ROM and 8KB of CHR-ROM.  Thus, our iNES header is defined as:
 
 <pre>
 .segment "HEADER"
@@ -24,6 +24,14 @@ The linker configuration file, included at the end of this document, essentially
         .byte   1               ; 1x  8KB CHR data
         .byte   $01, $00        ; mapper 0, vertical mirroring
 </pre>
+
+All apps can be built using the default target of the included `Makefile`.  In addition, they can be run in Nestopia using the `open` target.  Thus to compile, link, and run, you just type:
+
+    %  make open
+
+Most apps can be built easily using a single command, too.  For example, the background app can be built like:
+
+    % cl65 -t nes -o background.nes background.asm
 
 The nes.cfg File
 ================
