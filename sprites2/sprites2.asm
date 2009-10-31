@@ -12,7 +12,7 @@
 
 .segment "CODE"
 
-	;; Execution starts here after power up or reset
+	;; Execution starts here after power up or reset.
 reset:
 	sei			; disable IRQs
 	cld			; disable decimal mode
@@ -50,7 +50,7 @@ vblankwait2:
 	bit	$2002
 	bpl	vblankwait2
 
-	;; The color palettes are located in VRAM at $2000 - $201ff.
+	;; The color palettes are located in VRAM at $3f00 - $3f1f
 	;; Load from palette in ROM.
 load_palettes:
 	lda	$2002		; read PPU status to reset the high/low latch
@@ -60,14 +60,14 @@ load_palettes:
 	sta	$2006		;  .
 	ldx	#$00		; x = 0
 @loop:
-	lda	palette, x	; load palette byte from ROM (palette + x)
+	lda	palette, x	; load byte from ROM address (palette + x)
 	sta	$2007		; write to PPU
 	inx			; x = x + 1
 	cpx	#$20		; x == $20?
-	bne	@loop		; Yes, jump to @loop, no, fall through
+	bne	@loop		; No, jump to @loop, yes, fall through
 
 	;; Sprites are located in RAM at $0200 - $02ff. We are only
-	;; using 4 of the 64 sprites, $0200 - $0210. Load from sprites
+	;; using 4 of the 64 sprites, $0200 - $020f. Load from sprites
 	;; in ROM.
 load_sprites:
 	ldx	#$00		; x = 0
@@ -76,22 +76,22 @@ load_sprites:
 	sta	$0200, x	; store into RAM address ($0200 + x)
 	inx			; x = x + 1
 	cpx	#$10		; x == $10?
-	bne	@loop		; Yes, jump to @loop, no, fall through
+	bne	@loop		; No, jump to @loop, yes, fall through
 
 	;; Setup PPU to display sprites
 	lda	#%10000000	; enable NMI, sprites from Pattern Table 0
 	sta	$2000
-
 	lda	#%00010000	; enable sprites
 	sta	$2001
 	
+	;; Main loop. Everything happens in the NMI, so this just spins.
 forever:
 	jmp	forever
 
 	;; NMI gets called 60 times per second (on NTSC) via an
 	;; interrupt when the PPU vblank starts.
 nmi:
-	;; Copy sprites at $0200 in RAM into VRAM via DMA.
+	;; Copy sprites at $0200 in RAM into sprite VRAM via DMA.
 	lda	#$00		; set the low byte (00) of the RAM address
 	sta	$2003
 	lda	#$02		; set the high byte (02) of the RAM address 
