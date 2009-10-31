@@ -25,11 +25,12 @@ reset:
 	stx	$2001		; disable rendering
 	stx	$4010		; disable DMC IRQs
 
-@vblankwait1:			; First wait for vlbank to make sure PPU is ready
+	;; first wait for vblank to make sure PPU is ready
+vblankwait1:
 	bit	$2002
-	bpl	@vblankwait1
+	bpl	vblankwait1
 
-@clrmem:
+clear_memory:
 	lda	#$00
 	sta	$0000, x
 	sta	$0100, x
@@ -41,11 +42,12 @@ reset:
 	lda	#$fe
 	sta	$0200, x	; move all sprites off screen
 	inx
-	bne	@clrmem
+	bne	clear_memory
 
-@vblankwait2:			; Second wait for vblank, PPU is ready after this
+	;; second wait for vblank, PPU is ready after this
+vblankwait2:
 	bit	$2002
-	bpl	@vblankwait2
+	bpl	vblankwait2
 
 load_palettes:
 	lda	$2002		; read PPU status to reset the high/low latch
@@ -96,10 +98,19 @@ read_a:
 	and	#%00000001	; only look at bit 0
 	beq	@done		; branch to @done if button is NOT pressed (0)
 	;; add instructions here to do something when button IS pressed
-	lda	$0203		; load sprite X position
+	
+	;; move all 4 sprites one pixel to the right by adding 1
+	lda	$0203		; load sprite 0 X-position
 	clc			; make sure the carry flag is clear
 	adc	#$01		; a = a + 1
-	sta	$0203		; save sprite X position
+	sta	$0203		; save sprite 0 X-position
+	sta	$020b		; save sprite 2 X-position
+
+	lda	$0207		; load sprite 1 X-position
+	clc			; add one to it
+	adc	#$01		;  .
+	sta	$0207		; save sprite 1 X-position
+	sta	$020f		; save sprite 3 X-position
 @done:
 
 read_b:	
@@ -107,21 +118,34 @@ read_b:
 	and	#%00000001	; only look at bit 0
 	beq	@done		; branch to @done if button is NOT pressed (0)
 	;; add instructions here to do something when button IS pressed
-	lda	$0203		; load sprit X position
+	
+	;; move all 4 sprites one pixel to the left by subtracting 1
+	lda	$0203		; load sprite 0 X-position
 	sec			; make sure the carry flag is set
 	sbc	#$01		; a = a - 1
-	sta	$0203		; save sprite X position
+	sta	$0203		; save sprite 0 X-position
+	sta	$020b		; save sprite 2 X-position
+
+	lda	$0207		; load sprite 1 X-position
+	sec			; add one to it
+	sbc	#$01		;  .
+	sta	$0207		; save sprite 1 X-position
+	sta	$020f		; save sprite 3 X-position
 @done:
 	
 	rti			; return from interrupt
 
 palette:
 	;; Background palette
-	.byte	$0F,$31,$32,$33, $0F,$35,$36,$37
-	.byte	$0F,$39,$3A,$3B, $0F,$3D,$3E,$0F
+	.byte	$0F,$31,$32,$33
+	.byte	$0F,$35,$36,$37
+	.byte	$0F,$39,$3A,$3B
+	.byte	$0F,$3D,$3E,$0F
 	;; Sprite palette
-	.byte 	$0F,$1C,$15,$14, $0F,$02,$38,$3C
-	.byte	$0F,$1C,$15,$14, $0F,$02,$38,$3C
+	.byte 	$0F,$16,$27,$18
+	.byte	$0F,$02,$38,$3C
+	.byte	$0F,$1C,$15,$14
+	.byte	$0F,$02,$38,$3C
 
 sprites:
 	;;      vert tile attr horiz
