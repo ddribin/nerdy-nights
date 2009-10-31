@@ -19,17 +19,18 @@ reset:
 	ldx	#$40
 	stx	$4017		; dsiable APU frame IRQ
 	ldx	#$ff		; Set up stack
-	txs			;  +
+	txs			;  .
 	inx			; now X = 0
 	stx	$2000		; disable NMI
 	stx	$2001		; disable rendering
 	stx	$4010		; disable DMC IRQs
 
-@vblankwait1:			; First wait for vlbank to make sure PPU is ready
+	;; first wait for vblank to make sure PPU is ready
+vblankwait1:
 	bit	$2002
-	bpl	@vblankwait1
+	bpl	vblankwait1
 
-@clrmem:
+clear_memory:
 	lda	#$00
 	sta	$0000, x
 	sta	$0100, x
@@ -41,11 +42,12 @@ reset:
 	lda	#$fe
 	sta	$0200, x	; move all sprites off screen
 	inx
-	bne	@clrmem
+	bne	clear_memory
 
-@vblankwait2:			; Second wait for vblank, PPU is ready after this
+	;; second wait for vblank, PPU is ready after this
+vblankwait2:
 	bit	$2002
-	bpl	@vblankwait2
+	bpl	vblankwait2
 
 load_palettes:
 	lda	$2002		; read PPU status to reset the high/low latch
@@ -88,15 +90,19 @@ nmi:
 	rti			; return from interrupt
 
 palette:
-	;; Background palettet
-	.byte	$0F,$31,$32,$33, $0F,$35,$36,$37
-	.byte	$0F,$39,$3A,$3B, $0F,$3D,$3E,$0F
+	;; Background palette
+	.byte	$0F,$31,$32,$33
+	.byte	$0F,$35,$36,$37
+	.byte	$0F,$39,$3A,$3B
+	.byte	$0F,$3D,$3E,$0F
 	;; Sprite palette
-	.byte 	$0F,$1C,$15,$14, $0F,$02,$38,$3C
-	.byte	$0F,$1C,$15,$14, $0F,$02,$38,$3C
+	.byte 	$0F,$16,$27,$18
+	.byte	$0F,$02,$38,$3C
+	.byte	$0F,$1C,$15,$14
+	.byte	$0F,$02,$38,$3C
 
 sprites:
-	;; vert tile attr horiz
+	;;	vert tile attr horiz
 	.byte	$80, $32, $00, $80 ; sprite 0
 	.byte	$80, $33, $00, $88 ; sprite 1
 	.byte	$88, $34, $00, $80 ; sprite 2
