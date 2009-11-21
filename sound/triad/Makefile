@@ -1,4 +1,4 @@
 PROGRAM	= triad
 SOURCES	= triad.asm
 
-include ../common.mk
+include ../../common.mk
