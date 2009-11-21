@@ -63,13 +63,30 @@ vblankwait2:
 	bit	$2002
 	bpl	vblankwait2
 
+clear_nametables:
+	lda	$2002		; read PPU status to reset the high/low latch
+	lda	#$20		; write the high byte of $2000
+	sta	$2006		;  .
+	lda	#$00		; write the low byte of $2000
+	sta	$2006		;  .
+	ldx	#$08		; prepare to fill 8 pages ($800 bytes)
+	ldy	#$00		;  x/y is 16-bit counter, high byte in x
+	lda	#$00		; fill with tile $27 (a solid box)
+@loop:
+	sta	$2007
+	dey
+	bne	@loop
+	dex
+	bne	@loop
+	
 	;; set a couple palette colors. This demo only uses two.
 init_palette:
 	lda	$2002		; reset PPU HI/LO latch
 	
 	lda	#$3f
 	sta	$2006
-	lda	#$00		; palette data starts at $3F00
+	lda	#$00
+	sta	$2006		; palette data starts at $3F00
 
 	lda	#$0f		; black
 	sta	$2007
