@@ -64,14 +64,15 @@ vblankwait2:
 	bpl	vblankwait2
 
 clear_nametables:
-	lda	$2002		; read PPU status to reset the high/low latch
-	lda	#$20		; write the high byte of $2000
+	lda	$2002		; Read PPU status to reset the high/low latch
+	lda	#$20		; Write the high byte of $2000
 	sta	$2006		;  .
-	lda	#$00		; write the low byte of $2000
+	lda	#$00		; Write the low byte of $2000
 	sta	$2006		;  .
-	ldx	#$08		; prepare to fill 8 pages ($800 bytes)
+	ldx	#$08		; Prepare to fill 8 pages ($800 bytes)
 	ldy	#$00		;  x/y is 16-bit counter, high byte in x
-	lda	#$00		; fill with tile $27 (a solid box)
+	lda	#$00		; Fill with tile $00 (a transparent box)
+				; Also sets attribute tables to $00
 @loop:
 	sta	$2007
 	dey
@@ -79,7 +80,7 @@ clear_nametables:
 	dex
 	bne	@loop
 	
-	;; set a couple palette colors. This demo only uses two.
+	;; Set a couple palette colors. This demo only uses two.
 init_palette:
 	lda	$2002		; reset PPU HI/LO latch
 	
