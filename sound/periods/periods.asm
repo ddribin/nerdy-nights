@@ -299,6 +299,8 @@ draw_note:
 	sta	$2007
 	rts
 
+.segment "RODATA"
+
 ;;; this is a table of poitners. These pointers point to the beginning of text strings
 text_pointers:
 	.word	text_A, text_Asharp, text_B, text_C, text_Csharp, text_D
@@ -308,6 +310,8 @@ text_pointers:
 ;;;  $00 = blank
 ;;;  $0a = "#"
 ;;;  $10-$16 = "A" - "G"
+;;;  $ff = string terminator
+.if 1
 text_A:		.byte	$00, $10, $ff
 text_Asharp:	.byte	$10, $0a, $ff
 text_B:		.byte	$00, $11, $ff
@@ -320,7 +324,33 @@ text_F:		.byte	$00, $15, $ff
 text_Fsharp:	.byte	$15, $0a, $ff
 text_G:		.byte	$00, $16, $ff
 text_Gsharp:	.byte	$16, $0a, $ff
- 
+.else
+	;; Alternate method using CA65's character maps
+	.charmap	' ', $00
+	.charmap	'#', $0a
+	.charmap	'A', $10
+	.charmap	'B', $11
+	.charmap	'C', $12
+	.charmap	'D', $13
+	.charmap	'E', $14
+	.charmap	'F', $15
+	.charmap	'G', $16
+	.charmap	'.', $ff
+	
+text_A:		.byte	" A."
+text_Asharp:	.byte	"A#."
+text_B:		.byte	" B."
+text_C:		.byte	" C."
+text_Csharp:	.byte	"C#."
+text_D:		.byte	" D."
+text_Dsharp:	.byte	"D#."
+text_E:		.byte 	" E."
+text_F:		.byte	" F."
+text_Fsharp:	.byte	"F#."
+text_G:		.byte	" G."
+text_Gsharp:	.byte	"G#."
+.endif
+	
 ;;;;;;;;;;;;;;  
   
 .segment "VECTORS"
