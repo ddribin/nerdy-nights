@@ -22,7 +22,7 @@ sleeping:		.res	1
 
 needdraw:		.res	1 	; Drawing flag
 dbuffer_index:		.res	1	; Current position in the drawing buffer
-ptr1:			.res	2 	; A pointer
+ptr1:			.res	2 	; An address pointer
 
 ;;;;;;;;;;;;;;;
 	
@@ -164,7 +164,7 @@ nmi:
 ;;; 
 read_joypad:
 	lda	joypad1
-	sta	joypad1_old	; save last frame's joypad button states
+	sta	joypad1_old	; Save last frame's joypad button states
 
 	lda	#$01
 	sta	$4016
@@ -179,10 +179,10 @@ read_joypad:
 	dex
 	bne	@loop
 
-	lda	joypad1_old	; what was pressed last frame. EOR to flip all the bits
+	lda	joypad1_old	; What was pressed last frame. EOR to flip all the bits
 	eor	#$ff		;  to find what was not pressed last frame.
-	and	joypad1		; what is pressed this frame
-	sta	joypad1_pressed	; stores off-to-on transitoins
+	and	joypad1		; What is pressed this frame
+	sta	joypad1_pressed	; Stores off-to-on transitions
 	
 	rts
 
@@ -342,7 +342,7 @@ draw_dbuffer:
 	iny
 	dex
 	bne	@copy_loop
-	beq	@header_loop	; When we finsih copying, see if there is another string
+	beq	@header_loop	; When we finish copying, see if there is another string
 @done:
 	;; Reset index and "empty" the dbuffer by sticking a zero in the first position
 	ldy	#$00
