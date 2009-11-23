@@ -23,7 +23,6 @@ sleeping:		.res	1
 needdraw:		.res	1 	; Drawing flag
 dbuffer_index:		.res	1	; Current position in the drawing buffer
 ptr1:			.res	2 	; An address pointer
-sound_ptr:		.res	2
 current_song:		.res 	1
 
 ;;;;;;;;;;;;;;;

@@ -26,7 +26,6 @@
 	.import 	sound_play_frame
 
 	.import 	sound_disable_flag
-	.import		sfx_playing
 	
 	.import		stream_status
 

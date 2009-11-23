@@ -10,50 +10,56 @@
 	.export sound_play_frame
 
 	.export sound_disable_flag
-	.export sfx_playing
 	.export stream_status
+
+	.zeropage
+	
+	sound_ptr:		.res	2
 
 	.segment "SRAM1"
 
 ;;; A flag that keeps track of whether or the sound engine is disabled or not.
 sound_disable_flag:	.res	1
+sound_temp1:		.res	1
+sound_temp2:		.res	1
 
 ;;; A primitive counter used to time notes in this demo
 sound_frame_counter:	.res	1
-
-;;; A flag that tells us if our sound is playing or not.
-sfx_playing:		.res	1
-
-;;; Our current position in the sound data.
-sfx_index:		.res	1
 
 ;;; Reserve 6 bytes, one for each stream
 	
 stream_curr_sound:	.res	6 ; Current song/fx loaded
 ;;; Status byte. Bit 0 (1: stream enabled, 0: stream disabled)
 stream_status:		.res	6
+stream_channel:		.res	6 ; What channel is this stream playing on?
+stream_ptr_lo:		.res	6 ; Low byte of pointer to data stream
+stream_ptr_hi:		.res	6 ; High byte of pointer to data stream
+stream_vol_duty:	.res	6 ; Stream volume/duty settings
+stream_note_lo:		.res	6 ; Low 8 bits of period for current note
+stream_note_hi:		.res	6 ; High 3 bites of period for current note
 
+;;;;;;;;;;;;;;;
 
 	.code
 	
 sound_init:
+	;; Enable Square 1, Square 2, Triangle and Noise channels
 	lda	#$0f
-	sta	$4015		; Enable Square 1, Square 2, Triangle and Noise channels
+	sta	$4015
 
+	lda	#$00
+	sta	sound_disable_flag ; Clear disable flag
+	;; Later, if we have other variables we want to initialize, we will do
+	;; that here.
+	sta	sound_frame_counter
+
+se_silence:	
 	lda	#$30
 	sta	$4000		; Set Square 1 volume to 0
 	sta	$4004		; Set Square 2 volumne to 0
 	sta	$400c		; Set Noice volume to 0
 	lda	#$80
 	sta	$4008		; Silence Triangle
-
-	lda	#$00
-	sta	sound_disable_flag ; Clear disable flag
-	;; Later, if we have other variables we want to initialize, we will do
-	;; that here.
-	sta	sfx_playing
-	sta	sfx_index
-	sta	sound_frame_counter
 	
 	rts
 
@@ -64,61 +70,104 @@ sound_disable:
 	sta	sound_disable_flag ; Set disable flag
 	rts
 
+;;; 
+;;; sound_load will preprate the sound engine to play a song or sfx.
+;;; Inputs:
+;;; 	A: song/sfx number to play
+;;; 
 sound_load:
-	lda	#$01
-	sta	sfx_playing	; Set playing flag
-	lda	#$00
-	sta	sfx_index	; Reset the index and count
-	sta	sound_frame_counter
+	sta	sound_temp1	; Save song number
+	asl	a		; Multiply by 2. Index into a table of pointers.
+	tay
+	lda	song_headers, y	; Setup the pointer to our song header
+	sta	sound_ptr
+	lda	song_headers+1, y
+	sta	sound_ptr+1
+
+	ldy	#$00
+	lda	(sound_ptr), y	; Read the first byte: # streams
+	;; Store in a temp variable. We will use this as a loop counter: how
+	;; many streams to read stream headers for
+	sta	sound_temp2
+	iny
+@loop:
+	lda	(sound_ptr), y	; Stream number
+	tax			; Strem number acts as our variable index
+	iny
+
+	lda	(sound_ptr), y	; Status byte. 1=enable, 0=disable
+	sta	stream_status, x
+	;; If status byte is 0, stream disable, so we are done
+	beq	@next_stream
+	iny
+
+	lda	(sound_ptr), y	; Channel number
+	sta	stream_channel, x
+	iny
+
+	lda	(sound_ptr), y	; Initial duty and volume settings
+	sta	stream_vol_duty, x
+	iny
+
+	;; Pointer to stream data. Little endian, so low byte first
+	lda	(sound_ptr), y
+	sta	stream_ptr_lo, x
+	iny
+
+	lda	(sound_ptr), y
+	sta	stream_ptr_hi, x
+
+@next_stream:
+	iny
+
+	lda	sound_temp1	; Song number
+	sta	stream_curr_sound, x
+
+	dec	sound_temp2	; Our loop counter
+	bne	@loop
+	
 	rts
 
+	;; ** Change this to make the notes play faster or slowr
+	TEMPO = $0C
+	
 sound_play_frame:
 	lda	sound_disable_flag
-	bne	@done		; If disable flag is set, don't advance a frame
-
-	lda	sfx_playing
-	beq	@done		; If our sound isn't playing, don't advance a frame
+	beq	@done		; If disable flag is set, dont' advance a frame
 
 	inc	sound_frame_counter
 	lda	sound_frame_counter
-	;; *** Change this compare value to make the notes play faster or slower ***
-	cmp	#$08
+	cmp	#TEMPO
 	bne	@done
 
-	ldy	sfx_index
-	;; Read the next byte from our sound data stream
-	;; *** Uncomment one of the other lines below to play another data streams
-	lda	sfx1_data, y
-;	lda	sfx2_data, y
-;	lda	sfx3_data, y
+	;; Silence all channels. se_set_apu will set volumen later for all
+	;; channels that are enabled. The purpose of this subroutine call is
+	;; to silence all channels that aren't used by any streams
+	jsr	se_silence
 
-	cmp	#$ff
-	bne	@note		; If not  #$FF, we have a note value
-	lda	#$30		; Else if FF, we are at the end of the sound data
-	sta	$4000		;  stop the sound and return
-	lda	#$00
-	sta	sfx_playing
-	sta	sound_frame_counter
-	rts
+	ldx	#$00
+@loop:
+	lda	stream_status, x
+	and	#$01		; Check whether the stream is active
+	beq	@endloop	; If the channel isn't active, skip it
+	jsr	se_fetch_byte
+	jsr	se_set_apu
+@endloop:
+	inx
+	cpx	#$06
+	bne	@loop
 
-@note:
-	asl	a		; Multiple by 2 because our note table is store as words
-	tay			; We'll use this as an index into the note table
-
-	lda	note_table, y	; Read the low byte of our period from the table
-	sta	$4002
-	lda	note_table+1, y	; Read the high byte of our period from the table
-	sta	$4003
-	lda	#$7f		; Duty cucle 01, volume F
-	sta	$4000
-	lda	#$08		; Set negate flag so low Square notes aren't silenced
-	sta	$4001
-
-	;; Move our index to the next byte position in the data stream
-	inc	sfx_index
-	;; Reset frame counter so we can start counting to 8 again
+	;; Reset frame counter so we can start counting to TEMPO again.
 	lda	#$00
 	sta	sound_frame_counter
-
 @done:
 	rts
+
+se_fetch_byte:
+	rts
+
+se_set_apu:
+	rts
+
+;;; This is our poitner table. Each entry is a pointer to a song header
+song_headers:	
