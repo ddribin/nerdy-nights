@@ -1,7 +1,13 @@
 AS	= ca65
 ASFLAGS	= -l
 LD	= ld65
-LDFLAGS	= -t nes -m $(PROGRAM).map
+LDFLAGS	= -m $(PROGRAM).map
+
+ifdef CONFIG_FILE
+LDFLAGS	+= --config $(CONFIG_FILE)
+else
+LDFLAGS += -t nes
+endif
 
 all: $(PROGRAM).nes
 
