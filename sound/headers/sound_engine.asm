@@ -1,7 +1,7 @@
 
 	.include "note_table.h"
 	.include "sound_data.h"
-	
+	.include "sound_defs.h"
 
 	;; Exported symbols
 	.export sound_init
@@ -163,11 +163,95 @@ sound_play_frame:
 @done:
 	rts
 
+;;;
+;;; se_fetch_byte reads one byte from the sound data stream and handles it
+;;; Inputs:
+;;; 	X: stream number
+;;; 
 se_fetch_byte:
+	lda	stream_ptr_lo, x
+	sta	sound_ptr
+	lda	stream_ptr_hi, x
+	sta	sound_ptr+1
+
+	ldy	#$00
+	lda	(sound_ptr), y
+	bpl	@note		; If < #$80, it's a Note
+	cmp	#$A0
+	bcc	@note_length	; Else if < #$A0, it's a Note Length
+@opcode:			; Else it's an opcode
+	;; Do Opcode stuff
+	cmp	#$ff
+	bne	@end
+	lda	stream_status, x ; If $FF, end of stream so disable it and silence
+	and	#%11111110
+	sta	stream_status, x ; Clear enable flag in status byte
+
+	lda	stream_channel, x
+	cmp	#TRIANGLE
+	;; Triangle is silenced differenlty from squares and noise
+	beq	@silence_tri
+	lda	#$30		; Squaures and noise silenced witht #$30
+	bne	@silence
+@silence_tri:
+	lda	#$80		; Triangle silenced with #$80
+@silence:
+	sta	stream_vol_duty, x ; Store silence value in the stream's volume
+	jmp	@update_pointer	   ; Done
+@note_length:
+	;; Do Note Length stuff
+	jmp	@update_pointer	; Note implemented yet
+@note:
+	;; Do Note stuff
+	sty	sound_temp1	; Save our index into the data stream
+	asl	a
+	tay
+	lda	note_table, y
+	sta	stream_note_lo, x
+	lda	note_table+1, y
+	sta	stream_note_hi, x
+	ldy	sound_temp1	; Restore data stream index
+@update_pointer:
+	iny
+	tya
+	clc
+	adc	stream_ptr_lo, x
+	sta	stream_ptr_lo, x
+	bcc	@end
+	inc	stream_ptr_hi, x
+@end:
 	rts
 
+;;; 
+;;; se_set_apu writes a stream's data to the APU ports
+;;; Inputs:
+;;; 	X: stream number
+;;; 
 se_set_apu:
+	lda	stream_channel, x
+	;; Multipley by 4 so our index will point to the right set of registers
+	asl	a
+	asl	a
+	tay
+	lda	stream_vol_duty, x
+	sta	$4000, y
+	lda	stream_note_lo, x
+	sta	$4002, y
+	lda	stream_note_hi, x
+	sta	$4003, y
+
+	lda	stream_channel, x
+	cmp	#TRIANGLE
+	bcs	@end		; If Triangle or Noise, skip this part
+	;; Else set negate flag in sweep unit to allow low notes on Squares
+	lda	#$08
+	sta	$4001, y
+@end:
 	rts
 
 ;;; This is our poitner table. Each entry is a pointer to a song header
-song_headers:	
+	.import song0_header
+	.import song1_header
+song_headers:
+	.word	song0_header	; This is a silence song.
+	.word	song1_header
