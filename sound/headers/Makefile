@@ -5,6 +5,6 @@ CONFIG_FILE = nes.cfg
 
 include ../../common.mk
 
-skeleton.o: sound_engine.h
+headers.o: sound_engine.h
 sound_engine.o: note_table.h sound_data.h sound_defs.h
 song0.o song1.o: note_table.h sound_defs.h

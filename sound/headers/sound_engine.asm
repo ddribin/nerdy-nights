@@ -128,17 +128,17 @@ sound_load:
 	
 	rts
 
-	;; ** Change this to make the notes play faster or slowr
+	;; *** Change this to make the notes play faster or slower ***
 	TEMPO = $0C
 	
 sound_play_frame:
 	lda	sound_disable_flag
-	beq	@done		; If disable flag is set, dont' advance a frame
+	bne	@done		; If disable flag is set, dont' advance a frame
 
 	inc	sound_frame_counter
 	lda	sound_frame_counter
 	cmp	#TEMPO
-	bne	@done
+	bne	@done		; Only take action once very TEMPO frames
 
 	;; Silence all channels. se_set_apu will set volumen later for all
 	;; channels that are enabled. The purpose of this subroutine call is
@@ -254,4 +254,4 @@ se_set_apu:
 	.import song1_header
 song_headers:
 	.word	song0_header	; This is a silence song.
-	.word	song1_header
+	.word	song1_header	; Evil, demented notes
