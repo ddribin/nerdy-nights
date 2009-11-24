@@ -336,32 +336,50 @@ se_set_temp_ports:
 	
 ;;; 
 ;;; se_set_apu copies the temporary APU variables to the real APU ports.
-;;; Inputs:
-;;; 	X: stream number
 ;;; 
 se_set_apu:
-	lda	stream_channel, x
-	;; Multiply by 4 so our index will point to the right set of registers
-	asl	a
-	asl	a
-	tay
-	lda	stream_vol_duty, x
-	sta	$4000, y
-	lda	stream_note_lo, x
-	sta	$4002, y
-	lda	stream_note_hi, x
-	sta	$4003, y
-
-	lda	stream_channel, x
-	cmp	#TRIANGLE
-	bcs	@end		; If Triangle or Noise, skip this part
-	;; Else set negate flag in sweep unit to allow low notes on Squares
-	lda	#$08
-	sta	$4001, y
-@end:
+@square1:
+	lda	soft_apu_ports+0
+	sta	$4000
+	lda	soft_apu_ports+1
+	sta	$4001
+	lda	soft_apu_ports+2
+	sta	$4002
+	lda	soft_apu_ports+3
+	cmp	sound_sq1_old	; Compare to last write
+	beq	@square2	; Don't write this frame if they were equal
+	sta	$4003
+	sta	sound_sq1_old	; Save the value we just wrote to $4003
+@square2:
+	lda	soft_apu_ports+4
+	sta	$4004
+	lda	soft_apu_ports+5
+	sta	$4005
+	lda	soft_apu_ports+6
+	sta	$4006
+	;; Conditionally write $4007, as above
+	lda	soft_apu_ports+7
+	cmp	sound_sq2_old
+	beq	@triangle
+	sta	$4007
+	sta	sound_sq2_old
+@triangle:
+	lda	soft_apu_ports+8
+	sta	$4008
+	lda	soft_apu_ports+10 ; There is no $4009, so we skip it
+	sta	$400a
+	lda	soft_apu_ports+11
+	sta	$400b
+@noise:
+	lda	soft_apu_ports+12
+	sta	$400c
+	lda	soft_apu_ports+14 ; There is no $400E, so we skip it
+	sta	$400e
+	lda	soft_apu_ports+15
+	sta	$400f
 	rts
 
-;;; This is our poitner table. Each entry is a pointer to a song header
+;;; This is our pointer table. Each entry is a pointer to a song header
 	.import song0_header
 	.import song1_header
 	.import song2_header
