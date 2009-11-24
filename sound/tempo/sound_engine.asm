@@ -300,6 +300,38 @@ se_check_rest:
 ;;; 	X: stream number
 ;;; 
 se_set_temp_ports:
+	lda	stream_channel, x
+	;; Multiply by 4 so our index will point to the right set of registers
+	asl	a
+	asl	a
+	tay
+	
+	lda	stream_vol_duty, x
+	sta	soft_apu_ports, y
+
+	lda	#$08
+	sta	soft_apu_ports+1, y ; Sweep
+	
+	lda	stream_note_lo, x
+	sta	soft_apu_ports+2, y
+	
+	lda	stream_note_hi, x
+	sta	soft_apu_ports+3, y
+
+	;; Check the rest flag. If set, overwrite volume with silence value
+	lda	stream_status, x
+	and	#%00000010
+	beq	@done		; If clear, no rest, so quit
+	lda	stream_channel, x
+	cmp	#TRIANGLE	; If Triangle, silence with #$80
+	beq	@tri
+	lda	#$30		; Square and Noise, silence with #$30
+	bne	@store
+@tri:
+	lda	#$80
+@store:
+	sta	soft_apu_ports, y
+@done:
 	rts
 	
 ;;; 
@@ -309,7 +341,7 @@ se_set_temp_ports:
 ;;; 
 se_set_apu:
 	lda	stream_channel, x
-	;; Multipley by 4 so our index will point to the right set of registers
+	;; Multiply by 4 so our index will point to the right set of registers
 	asl	a
 	asl	a
 	tay
