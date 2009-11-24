@@ -2,6 +2,7 @@
 ;;; http://www.freewebs.com/the_bott/NotesTableNTSC.txt
 
 .export	note_table
+.export note_length_table
 	
 note_table:
 .word                                                                       $07F1, $0780
@@ -13,3 +14,24 @@ note_table:
 .word $0034, $0031, $002F, $002C, $0029, $0027, $0025, $0023, $0021, $001F, $001D, $001B ; C7-B7 ($3F-$4A)
 .word $001A, $0018, $0017, $0015, $0014, $0013, $0012, $0011, $0010, $000F, $000E, $000D ; C8-B8 ($4B-$56)
 .word $000C, $000C, $000B, $000A, $000A, $0009, $0008              
+
+.word $0000			; Rest
+
+note_length_table:
+	.byte	$01		; 32nd note
+	.byte	$02		; 16th note
+	.byte	$04		; 8th note
+	.byte	$08		; Quarter note
+	.byte	$10		; Half note
+	.byte	$20		; Whole note
+
+	;; Dotted notes
+	.byte	$03		; Dotted 16th note
+	.byte	$06		; Dotted 8th note
+	.byte	$0c		; Dotted quarter note
+	.byte	$18		; Dotted half note
+	.byte	$30		; Dotted whole note?
+
+	;; Other
+	;; Modified quarter to fit after d_sixtength triplets
+	.byte	$07

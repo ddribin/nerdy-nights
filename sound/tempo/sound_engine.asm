@@ -208,23 +208,26 @@ se_fetch_byte:
 	sta	sound_ptr+1
 
 	ldy	#$00
+@fetch:
 	lda	(sound_ptr), y
 	bpl	@note		; If < #$80, it's a Note
 	cmp	#$A0
 	bcc	@note_length	; Else if < #$A0, it's a Note Length
 @opcode:			; Else it's an opcode
 	;; Do Opcode stuff
+
+	;; If $FF, end of stream so disable it and silence
 	cmp	#$ff
 	bne	@end
-	lda	stream_status, x ; If $FF, end of stream so disable it and silence
+	lda	stream_status, x
 	and	#%11111110
 	sta	stream_status, x ; Clear enable flag in status byte
 
 	lda	stream_channel, x
 	cmp	#TRIANGLE
-	;; Triangle is silenced differenlty from squares and noise
+	;; Triangle is silenced differently from squares and noise
 	beq	@silence_tri
-	lda	#$30		; Squaures and noise silenced witht #$30
+	lda	#$30		; Squaures and noise silenced with #$30
 	bne	@silence
 @silence_tri:
 	lda	#$80		; Triangle silenced with #$80
@@ -233,7 +236,15 @@ se_fetch_byte:
 	jmp	@update_pointer	   ; Done
 @note_length:
 	;; Do Note Length stuff
-	jmp	@update_pointer	; Note implemented yet
+	and	#%01111111	; Chop off bit 7
+	sty	sound_temp1	; Save Y because we are about to destroy it
+	tay
+	lda	note_length_table, y ; Get the note length count value
+	sta	stream_note_length, x
+	sta	stream_note_length_counter, x
+	ldy	sound_temp1	; Restore Y
+	iny
+	jmp	@fetch		; Fetch another byte
 @note:
 	;; Do Note stuff
 	sty	sound_temp1	; Save our index into the data stream
@@ -244,6 +255,9 @@ se_fetch_byte:
 	lda	note_table+1, y
 	sta	stream_note_hi, x
 	ldy	sound_temp1	; Restore data stream index
+
+	;; Check if it's a rest and modify the status flag appropriately
+	jsr	se_check_rest
 @update_pointer:
 	iny
 	tya
@@ -253,6 +267,30 @@ se_fetch_byte:
 	bcc	@end
 	inc	stream_ptr_hi, x
 @end:
+	rts
+
+
+;;;
+;;; se_check_rest will read a byte from the data stream and determine if
+;;; it is a rest or not.  It will set our clear the current stream's
+;;; rest flag accordingly.
+;;; Inputs:
+;;; 	X: stream number
+;;; 	Y: data stream index
+;;; 
+se_check_rest:
+	lda	(sound_ptr), y	; Read the note byte again
+	cmp	#rest
+	bne	@not_rest
+@rest:
+	lda	stream_status, x
+	ora	#%00000010	; Set the rest bit in the status byte
+	bne	@store		; This will always branch (cheaper than a jmp)
+@not_rest:
+	lda	stream_status, x
+	and	#%11111101	; Clear the rest bit in the status byte
+@store:
+	sta	stream_status, x
 	rts
 
 ;;;

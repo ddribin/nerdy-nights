@@ -1,4 +1,5 @@
 .import note_table
+.import note_length_table
 
 	
 ;;; Note: octaves in music traditionally start at C, not A
@@ -142,8 +143,24 @@ Eb9 = $5a
 E9  = $5b
 F9  = $5c
 Fs9 = $5d
-Gb9 = $5d	
+Gb9 = $5d
 
+rest = $5e
+
+;;; Note length constants (aliases)
+thirtysecond = $80
+sixteenth = $81
+eighth = $82
+quarter = $83
+half = $84
+whole = $85
+d_sixteenth = $86
+d_eighth = $87
+d_quarter = $88
+d_half = $89
+d_whole = $8A   ;don't forget we are counting in hex
+t_quarter = $8B
+	
 ; Local Variables: 
 ; mode: asm
 ; End: 
