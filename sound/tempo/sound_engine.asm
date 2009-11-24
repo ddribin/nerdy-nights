@@ -128,6 +128,7 @@ sound_load:
 
 	lda	(sound_ptr), y
 	sta	stream_ptr_hi, x
+	iny
 
 	lda	(sound_ptr), y
 	sta	stream_tempo, x
@@ -137,7 +138,7 @@ sound_load:
 
 	lda	#$01
 	sta	stream_note_length_counter, x
-
+	sta	stream_note_length
 @next_stream:
 	iny
 
@@ -149,9 +150,6 @@ sound_load:
 	
 	rts
 
-	;; *** Change this to make the notes play faster or slower ***
-	TEMPO = $0C
-	
 sound_play_frame:
 	lda	sound_disable_flag
 	bne	@done		; If disable flag is set, dont' advance a frame
@@ -173,7 +171,7 @@ sound_play_frame:
 	clc
 	adc	stream_tempo, x
 	sta	stream_ticker_total, x
-	;; Cary clear = no tick. If no tick, we are done with this stream.
+	;; Carry clear = no tick. If no tick, we are done with this stream.
 	bcc	@set_buffer
 
 	;; Else there is a tick. Decrement the note length counter
@@ -181,12 +179,13 @@ sound_play_frame:
 	;; If counter is non-zero, our note isn't finished playing yet
 	bne	@set_buffer
 	;; Else our note is finished. Reload the note length counter
-	lda	stream_note_length_counter, x
+	lda	stream_note_length, x
+	sta	stream_note_length_counter, x
 	
 	jsr	se_fetch_byte
 @set_buffer:
 	;; Copy the current stream's sound data for the current from into our
-	;; temporary APU vars (soft_apu_ports
+	;; temporary APU vars (soft_apu_ports)
 	jsr	se_set_temp_ports
 @endloop:
 	inx
@@ -308,15 +307,19 @@ se_set_temp_ports:
 	asl	a
 	tay
 	
+	;; Volume
 	lda	stream_vol_duty, x
 	sta	soft_apu_ports, y
 
+	;; Sweep
 	lda	#$08
-	sta	soft_apu_ports+1, y ; Sweep
+	sta	soft_apu_ports+1, y
 	
+	;; Period lo
 	lda	stream_note_lo, x
 	sta	soft_apu_ports+2, y
 	
+	;; Period high
 	lda	stream_note_hi, x
 	sta	soft_apu_ports+3, y
 
