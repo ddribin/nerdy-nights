@@ -11,18 +11,21 @@ song1_header:
     .byte SQUARE_1      ;which channel
     .byte $77           ;initial volume (7) and duty (01)
     .word song1_square1 ;pointer to stream
+    .byte $40		;tempo
     
     .byte MUSIC_SQ2     ;which stream
     .byte $01           ;status byte (stream enabled)
     .byte SQUARE_2      ;which channel
     .byte $B7           ;initial volume (7) and duty (10)
     .word song1_square2 ;pointer to stream
+    .byte $40		;tempo
     
     .byte MUSIC_TRI     ;which stream
     .byte $01           ;status byte (stream enabled)
     .byte TRIANGLE      ;which channel
     .byte $81           ;initial volume (on)
     .word song1_tri     ;pointer to stream
+    .byte $40		;tempo
     
     .byte MUSIC_NOI     ;which stream
     .byte $00           ;disabled.  Our load routine will skip the

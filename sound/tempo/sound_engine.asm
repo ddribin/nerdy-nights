@@ -23,13 +23,15 @@ sound_disable_flag:	.res	1
 sound_temp1:		.res	1
 sound_temp2:		.res	1
 sound_sq1_old:		.res	1 ; The last value written to $4003
-sound_sq2_old:		.res	2 ; The last value written to $4007
+sound_sq2_old:		.res	1 ; The last value written to $4007
 soft_apu_ports:		.res	16
 
 ;;; Reserve 6 bytes, one for each stream
 	
 stream_curr_sound:	.res	6 ; Current song/fx loaded
-;;; Status byte. Bit 0 (1: stream enabled, 0: stream disabled)
+;;; Status byte.
+;;;   Bit 0 (1: stream enabled, 0: stream disabled)
+;;;   Bit 1 (1: resting, 0: not resting)
 stream_status:		.res	6
 stream_channel:		.res	6 ; What channel is this stream playing on?
 stream_ptr_lo:		.res	6 ; Low byte of pointer to data stream
@@ -65,11 +67,11 @@ sound_init:
 
 se_silence:	
 	lda	#$30
-	sta	$4000		; Set Square 1 volume to 0
-	sta	$4004		; Set Square 2 volumne to 0
-	sta	$400c		; Set Noice volume to 0
+	sta	soft_apu_ports	; Set Square 1 volume to 0
+	sta	soft_apu_ports+4 ; Set Square 2 volumne to 0
+	sta	soft_apu_ports+12 ; Set Noise volume to 0
 	lda	#$80
-	sta	$4008		; Silence Triangle
+	sta	soft_apu_ports+8 ; Silence Triangle
 	
 	rts
 
