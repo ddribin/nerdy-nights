@@ -1,6 +1,5 @@
 
 	.include "note_table.h"
-	.include "sound_data.h"
 	.include "sound_defs.h"
 
 	;; Exported symbols
