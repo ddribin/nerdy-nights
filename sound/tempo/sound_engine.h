@@ -1,8 +1,8 @@
 	
 	;; If you add a new song, change this number.  headers.asm checks this
-	;; number in its song_up and song_down subroutines to determin when
+	;; number in its song_up and song_down subroutines to determine when
 	;; to wrap around.
-	NUM_SONGS	= $04
+	NUM_SONGS	= $06
 	
 ;;;;;;;;;;;;;;;
 
