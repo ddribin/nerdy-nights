@@ -138,7 +138,7 @@ sound_load:
 
 	lda	#$01
 	sta	stream_note_length_counter, x
-	sta	stream_note_length
+	sta	stream_note_length, x
 @next_stream:
 	iny
 
