@@ -9,14 +9,16 @@ song4_header:
     .byte MUSIC_SQ1     ;which stream
     .byte $01           ;status byte (stream enabled)
     .byte SQUARE_1      ;which channel
-    .byte $BC           ;initial volume (C) and duty (10)
+    .byte $B0           ;initial duty (10)
+    .byte ve_loud_long  ;volume envelope
     .word song4_square1 ;pointer to stream
     .byte $60           ;tempo
     
     .byte MUSIC_SQ2     ;which stream
     .byte $01           ;status byte (stream enabled)
     .byte SQUARE_2      ;which channel
-    .byte $3A          ;initial volume (A) and duty (00)
+    .byte $30           ;initial duty (00)
+    .byte ve_short_staccato ;volume envelope
     .word song4_square2 ;pointer to stream
     .byte $60           ;tempo
     
@@ -24,6 +26,7 @@ song4_header:
     .byte $01           ;status byte (stream enabled)
     .byte TRIANGLE      ;which channel
     .byte $81           ;initial volume (on)
+    .byte ve_loud_long  ;volume envelope
     .word song4_tri     ;pointer to stream
     .byte $60           ;tempo
     
@@ -40,10 +43,11 @@ song4_square1:
     .byte $FF
     
 song4_square2:
-    .byte eighth, E3, rest, B3, rest, B3, rest, B3, rest, B2, rest, Fs3, rest, Fs3, rest, Fs3, rest
-    .byte         Fs3, rest, A3, rest, A3, rest, A3, rest, B2, rest, E3, rest, E3, rest, E3, rest
-    .byte         E3, rest, B3, rest, B3, rest, B3, rest, B3, rest, A3, rest, G3, rest, Fs3, rest
-    .byte eighth, E3, rest, B3, rest, A3, rest, Fs3, rest, E3, rest, d_half, rest
+    .byte quarter
+    .byte E3, B3, B3, B3, B2, Fs3, Fs3, Fs3
+    .byte Fs3, A3, A3, A3, B2, E3, E3, E3
+    .byte E3, B3, B3, B3, B3, A3, G3, Fs3
+    .byte E3, B3, A3, Fs3, E3, d_half, rest
     .byte $FF
     
 song4_tri:

@@ -9,12 +9,12 @@ song2_header:
     .byte SFX_1         ;which stream
     .byte $01           ;status byte (stream enabled)
     .byte SQUARE_2      ;which channel
-    .byte $7F           ;initial volume (F) and duty (01)
+    .byte $70           ;duty (01)
+    .byte ve_loud_long  ;volume envelope
     .word song2_square2 ;pointer to stream
     .byte $80           ;tempo
     
     
 song2_square2:
     .byte eighth, D3, D2
-    .byte $FF
-	
+    .byte $FF	

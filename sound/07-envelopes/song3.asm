@@ -9,23 +9,21 @@ song3_header:
     .byte MUSIC_SQ1     ;which stream
     .byte $01           ;status byte (stream enabled)
     .byte SQUARE_1      ;which channel
-    .byte $BC           ;initial volume (C) and duty (10)
+    .byte $B0           ;initial duty (10)
+    .byte ve_tgl_1      ;volume envelope
     .word song3_square1 ;pointer to stream
-    .byte $80           ;tempo
+    .byte $40           ;tempo
     
     .byte MUSIC_SQ2     ;which stream
-    .byte $01           ;status byte (stream enabled)
-    .byte SQUARE_2      ;which channel
-    .byte $3A           ;initial volume (A) and duty (00)
-    .word song3_square2 ;pointer to stream
-    .byte $80           ;tempo
+    .byte $00           ;status byte (stream disabled)
     
     .byte MUSIC_TRI     ;which stream
     .byte $01           ;status byte (stream enabled)
     .byte TRIANGLE      ;which channel
     .byte $81           ;initial volume (on)
+    .byte ve_tgl_2      ;volume envelope
     .word song3_tri     ;pointer to stream
-    .byte $80           ;tempo
+    .byte $40           ;tempo
     
     .byte MUSIC_NOI     ;which stream
     .byte $00           ;disabled.  Our load routine will skip the
@@ -33,20 +31,23 @@ song3_header:
                         ;   We are disabling Noise because we haven't covered it yet.
     
 song3_square1:
-    .byte eighth, A3, C4, E4, A4, C5, E5, A5, F3 ;some notes.  A minor
-    .byte G3, B3, D4, G4, B4, D5, G5, E3  ;Gmajor
-    .byte F3, A3, C4, F4, A4, C5, F5, C5 ;F major
-    .byte F3, A3, C4, F4, A4, C5, F5, rest ;F major
+    .byte eighth
+    .byte D4, A4, F4, A4, D4, B4, G4, B4
+    .byte D4, C5, A4, C5, D4, As4, F4, As4
+    .byte E4, A4, E4, A4, D4, A4, Fs4, A4
+    .byte D4, A4, Fs4, A4, G4, As4, A4, C5
+    .byte D4, C5, A4, C5, D4, B4, G4, B4
+    .byte D4, B4, G4, B4, D4, As4, Gs4, As4
+    .byte Cs4, A4, E4, A4, D4, A4, E4, A4
+    .byte Cs4, A4, E4, A4, B3, A4, Cs4, A4
     .byte $FF
-    
-song3_square2:
-    .byte eighth, A3, A3, A3, E4, A3, A3, E4, A3 
-    .byte G3, G3, G3, D4, G3, G3, D4, G3
-    .byte F3, F3, F3, C4, F3, F3, C4, F3
-    .byte F3, F3, F3, C4, F3, F3, C4, rest
-    .byte $FF
-    
+        
 song3_tri:
-    .byte whole, A3, G3, F3, F3
+    .byte quarter, D6, A6, d_half, G6
+    .byte eighth, F6, E6, quarter, D6
+    .byte eighth, C6, As5, C6, A5
+    .byte quarter, E6, d_whole, D6
+    .byte quarter, A6, C7, d_half, B6
+    .byte eighth, G6, F6, quarter, E6
+    .byte eighth, F6, G6, whole, A6, A6
     .byte $FF
-	
