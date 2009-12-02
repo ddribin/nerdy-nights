@@ -267,6 +267,8 @@ se_fetch_byte:
 	sta	stream_note_hi, x
 	ldy	sound_temp1	; Restore data stream index
 
+	lda	#$00		; Start at beginning of envelope for new notes
+	sta	stream_ve_index, x
 	;; Check if it's a rest and modify the status flag appropriately
 	jsr	se_check_rest
 @update_pointer:
