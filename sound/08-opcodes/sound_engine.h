@@ -15,6 +15,7 @@
 	.global		stream_ptr_lo
 	.global		stream_ptr_hi
 	.global		stream_ve
+	.global		stream_ve_index
 	.global		stream_vol_duty
 
 	;; These are channel constants.

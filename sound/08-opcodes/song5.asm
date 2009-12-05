@@ -16,4 +16,4 @@ song5_header:
     
 song5_square2:
     .byte thirtysecond, C4, D8, C5, D7, C6, D6, C7, D5, C8, D8 ;some random notes played very fast
-    .byte $FF
+    .byte endsound

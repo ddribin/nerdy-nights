@@ -49,7 +49,13 @@ se_op_infinite_loop:
 	rts
 
 se_op_change_ve:
+	lda	(sound_ptr), y	; Read the argument
+	sta	stream_ve, x	; Store it in our volume envelope variable
+	lda	#$00
+	sta	stream_ve_index, x ; Reset envelope index to beginning
 	rts
 
 se_op_duty:
+	lda	(sound_ptr), y	; Read the argument
+	sta	stream_vol_duty, x
 	rts

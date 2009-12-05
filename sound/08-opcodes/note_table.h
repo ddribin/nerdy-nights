@@ -160,6 +160,8 @@ d_quarter = $88
 d_half = $89
 d_whole = $8A   ;don't forget we are counting in hex
 t_quarter = $8B
+five_eighths = $8C
+five_sixteenths = $8D
 	
 ; Local Variables: 
 ; mode: asm

@@ -35,3 +35,5 @@ note_length_table:
 	;; Other
 	;; Modified quarter to fit after d_sixtength triplets
 	.byte	$07
+	.byte	$14		; 2 quarters plus an 8th
+	.byte	$0a
