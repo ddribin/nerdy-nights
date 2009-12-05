@@ -9,7 +9,7 @@ song2_header:
     .byte $01           ;status byte (stream enabled)
     .byte SQUARE_2      ;which channel
     .byte $70           ;duty (01)
-    .byte ve_loud_long  ;volume envelope
+    .byte ve_battlekid_1b  ;volume envelope
     .word song2_square2 ;pointer to stream
     .byte $80           ;tempo
     

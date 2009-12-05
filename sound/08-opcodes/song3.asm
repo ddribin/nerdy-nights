@@ -39,7 +39,8 @@ song3_square1:
     .byte D4, B4, G4, B4, D4, As4, Gs4, As4
     .byte Cs4, A4, E4, A4, D4, A4, E4, A4
     .byte Cs4, A4, E4, A4, B3, A4, Cs4, A4
-    .byte $FF
+    .byte loop
+    .word song3_square1
         
 song3_tri:
     .byte quarter, D6, A6, d_half, G6
@@ -49,4 +50,5 @@ song3_tri:
     .byte quarter, A6, C7, d_half, B6
     .byte eighth, G6, F6, quarter, E6
     .byte eighth, F6, G6, whole, A6, A6
-    .byte $FF
+    .byte loop
+    .word song3_tri

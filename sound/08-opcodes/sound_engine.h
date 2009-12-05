@@ -39,7 +39,10 @@
 	ve_blip_echo 		= $02
 	ve_tgl_1 		= $03
 	ve_tgl_2 		= $04
-	ve_loud_long 		= $05
+	ve_battlekid_1 		= $05
+	ve_battlekid_1b 	= $06
+	ve_battlekid_2 		= $07
+	ve_battlekid_2b 	= $08
 
 	;; opcode constants
 	endsound 	= $A0
