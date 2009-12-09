@@ -337,7 +337,7 @@ add_to_dbuffer:
 	ldy	#$00
 @loop:
 	lda	(ptr1), y
-	cmp	#$ff
+	cmp	#$00
 	beq	@done
 	sta	$0103, x	; Copy the text string to dbuffer
 	iny
@@ -407,7 +407,7 @@ draw_background:
 	ldy	#$00
 @loop1:
 	lda	text_sound, y
-	bmi	@sound_done
+	beq	@sound_done
 	sta	$2007
 	iny
 	bne	@loop1
@@ -421,7 +421,7 @@ draw_background:
 	ldy	#$00
 @loop2:
 	lda	text_song, y
-	bmi	@done
+	beq	@done
 	sta	$2007
 	iny
 	bne	@loop2
@@ -435,16 +435,16 @@ draw_background:
 	
 text_song:
 	;; "SONG:"
-	.byte	$22, $1E, $1D, $16, $0D, $FF
+	.byte	$22, $1E, $1D, $16, $0D, $00
 text_sound:
 	;; "SOUND:"
-	.byte	$22, $1E, $24, $1D, $13, $0D, $FF
+	.byte	$22, $1E, $24, $1D, $13, $0D, $00
 text_not_playing:
 	;; "NOT "
-	.byte 	$1D, $1E, $23, $00
+	.byte 	$1D, $1E, $23, $30
 text_playing:
 	;; "PLAYING    "
-	.byte 	$1F, $1B, $10, $28, $18, $1D, $16, $00, $00, $00, $00, $FF
+	.byte 	$1F, $1B, $10, $28, $18, $1D, $16, $30, $30, $30, $30, $00
 	
 ;;;;;;;;;;;;;;  
   

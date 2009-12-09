@@ -7,8 +7,3 @@ SOURCES	= opcodes.asm note_table.asm sound_engine.asm volume_envelopes.asm \
 CONFIG_FILE = nes.cfg
 
 include ../../common.mk
-
-sound_engine.h: note_table.h songs.h
-opcodes.o: sound_engine.h
-sound_engine.o: sound_engine.h
-songs.o song0.o song1.o song2.o song3.o song4.o song5.o: sound_engine.h
