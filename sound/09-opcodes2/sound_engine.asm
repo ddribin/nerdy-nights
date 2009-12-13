@@ -7,7 +7,7 @@
 	.zeropage
 	
 sound_ptr:		.res	2
-jmp_ptr:		.res	2
+sound_ptr2:		.res	2
 
 	.segment "SRAM1"
 
@@ -38,6 +38,8 @@ stream_tempo:		.res	6 ; The value to add to our ticker each frame
 stream_ticker_total:	.res	6 ; Our running ticker totoal
 stream_note_length_counter: .res 6
 stream_note_length:	.res	6
+stream_loop1:		.res	6 ; Loop counter
+stream_note_offset:	.res	6 ; For key changes
 	
 
 ;;;;;;;;;;;;;;;
@@ -141,6 +143,8 @@ sound_load:
 
 	lda	#$00
 	sta	stream_ve_index, x
+	sta	stream_loop1, x
+	sta	stream_note_offset, x
 @next_stream:
 	iny
 
@@ -240,6 +244,8 @@ se_fetch_byte:
 @note:
 	;; Do Note stuff
 	sty	sound_temp1	; Save our index into the data stream
+	clc
+	adc	stream_note_offset, x
 	asl	a
 	tay
 	lda	note_table, y
@@ -302,12 +308,12 @@ se_opcode_launcher:
 	asl	a		; Multiply by 2 because it's a table of words
 	tay
 	lda	sound_opcodes, y 	; Get the low byte
-	sta	jmp_ptr
+	sta	sound_ptr2
 	lda	sound_opcodes+1, y 	; Get the high byte
-	sta	jmp_ptr+1
+	sta	sound_ptr2+1
 	ldy	sound_temp1	; Restore Y register
 	iny			; Set to next position in data stream
-	jmp	(jmp_ptr)
+	jmp	(sound_ptr2)
 
 ;;;
 ;;; se_set_temp_ports will copy a stream's sound data to the temporary APU
