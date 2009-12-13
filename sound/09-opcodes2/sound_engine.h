@@ -44,15 +44,10 @@
 	ve_battlekid_1b 	= $06
 	ve_battlekid_2 		= $07
 	ve_battlekid_2b 	= $08
-
-	;; opcode constants
-	endsound 	= $A0
-	loop		= $A1
-	volume_envelope	= $A2
-	duty 		= $A3
 	
 	.include "note_table.h"
 	.include "songs.h"
+	.include "sound_opcodes.h"
 	
 ; Local Variables: 
 ; mode: asm

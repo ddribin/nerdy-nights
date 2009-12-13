@@ -36,22 +36,21 @@ song1_header:
     
 song1_square1:
     .byte eighth
+    .byte set_loop1_counter, 14             ;repeat 14 times
+@loop:
     .byte A2, A2, A2, A3, A2, A3, A2, A3
-    .byte F3, F3, F3, F4, F3, F4, F3, F4
-    .byte A2, A2, A2, A3, A2, A3, A2, A3
-    .byte F3, F3, F3, F4, F3, F4, F3, F4
-    .byte E3, E3, E3, E4, E3, E4, E3, E4
-    .byte E3, E3, E3, E4, E3, E4, E3, E4
-    .byte Ds3, Ds3, Ds3, Ds4, Ds3, Ds4, Ds3, Ds4
-    .byte D3, D3, D3, D4, D3, D4, D3, D4
-    .byte C3, C3, C3, C4, C3, C4, C3, C4
-    .byte B2, B2, B2, B3, B2, B3, B2, B3
-    .byte As2, As2, As2, As3, As2, As3, As2, As3
-    .byte A2, A2, A2, A3, A2, A3, A2, A3
-    .byte Gs2, Gs2, Gs2, Gs3, Gs2, Gs3, Gs2, Gs3
-    .byte G2, G2, G2, G3, G2, G3, G2, G3
-    .byte loop
+    .byte transpose                         ;the transpose opcode take a 2-byte argument
+    .word @lookup_table                     ;which is the address of the lookup table
+    
+    .byte loop1                             ;finite loop (14 times)
+    .word @loop
+    
+    .byte loop                              ;infinite loop
     .word song1_square1
+    
+@lookup_table:
+    .byte 2, -1, -1, -1, -1, -1, -2
+    .byte -1, -1, 0, -1, 8, -8, 8       ;14 entries long, reverse order
 
 
     

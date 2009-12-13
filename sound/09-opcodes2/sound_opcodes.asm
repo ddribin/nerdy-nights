@@ -5,10 +5,15 @@
 
 ;;; This is our jump table.
 sound_opcodes:
-	.word	se_op_endsound	    ; $A0
-	.word	se_op_infinite_loop ; $A1
-	.word	se_op_change_ve	    ; $A2
-	.word	se_op_duty	    ; $A3
+	.word	se_op_endsound	    	 ; $A0
+	.word	se_op_infinite_loop 	 ; $A1
+	.word	se_op_change_ve	    	 ; $A2
+	.word	se_op_duty	    	 ; $A3
+	.word	se_op_set_loop1_counter	 ; $A4
+	.word	se_op_loop1		 ; $A5
+	.word	se_op_set_note_offset	 ; $A6
+	.word 	se_op_adjust_note_offset ; $A7
+	.word	se_op_transpose		 ; $A8
 	;; etc, 1 entry per subroutine
 
 ;;; These are the actual opcode subroutines
@@ -58,4 +63,19 @@ se_op_change_ve:
 se_op_duty:
 	lda	(sound_ptr), y	; Read the argument
 	sta	stream_vol_duty, x
+	rts
+
+se_op_set_loop1_counter:
+	rts
+
+se_op_loop1:
+	rts
+
+se_op_set_note_offset:
+	rts
+
+se_op_adjust_note_offset:
+	rts
+	
+se_op_transpose:
 	rts
