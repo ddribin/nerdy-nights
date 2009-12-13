@@ -1,6 +1,6 @@
 	
 	;; If you add a new song, change this number.
-	NUM_SONGS	= $07
+	NUM_SONGS	= $08
 
 	.global	song_headers
 	

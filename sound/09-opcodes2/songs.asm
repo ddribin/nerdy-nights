@@ -9,6 +9,7 @@
 	.import	song4_header
 	.import	song5_header
 	.import	song6_header
+	.import	song7_header
 	
 song_headers:
 	.word	song0_header	; This is a silence song.
@@ -18,4 +19,5 @@ song_headers:
 	.word	song4_header	; Song using note lengths and rests
 	.word	song5_header
 	.word	song6_header
+	.word	song7_header
 	

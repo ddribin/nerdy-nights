@@ -66,16 +66,53 @@ se_op_duty:
 	rts
 
 se_op_set_loop1_counter:
+	lda	(sound_ptr), y	; Read the argument (# times to loop)
+	sta	stream_loop1, x	; Store it in the loop counter variable
 	rts
 
 se_op_loop1:
+	dec	stream_loop1, x	; Decrement the counter
+	lda	stream_loop1, x
+	beq	@last_iteration	; If zero, we are done looping
+	jmp	se_op_infinite_loop ; If not zero, jump back
+@last_iteration:
+	;; Skip the first byte of the address argument.  The second byte
+	;; will be skipped automatically upon return. See se_fetch_byte
+	;; after "jsr se_opcode_launcher"
+	iny
 	rts
 
 se_op_set_note_offset:
+	lda	(sound_ptr), y	; Read the argument
+	sta	stream_note_offset, x ; Set the note offset
 	rts
 
 se_op_adjust_note_offset:
+	lda	(sound_ptr), y	; Read the argument (what value to add)
+	clc
+	adc	stream_note_offset, x ; Add it to the current offset
+	sta	stream_note_offset, x ;  and save it.
 	rts
 	
 se_op_transpose:
+	lda	(sound_ptr), y	; Read low byte of pointer to lookup table
+	sta	sound_ptr2
+	iny
+	lda	(sound_ptr), y	; Read high byte of pointer to lookup table
+	sta	sound_ptr2+1
+
+	;; Get loop counter, and put it in Y. This will be our idex into
+	;; the lookup table.
+	sty	sound_temp1
+	lda	stream_loop1, x
+	tay
+	dey			; Subtract 1 because indexes start from 0
+
+	;; Read a value from the table, and add it to the note offset.
+	lda	(sound_ptr2), y
+	clc
+	adc	stream_note_offset, x
+	sta	stream_note_offset, x
+
+	ldy	sound_temp1	; Restore Y
 	rts

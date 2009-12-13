@@ -38,10 +38,12 @@ song6_header:
                         
 song6_square1:
     .byte sixteenth
-    .byte A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4
-    .byte A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4
-    .byte A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4
-    .byte A3, C4, E4, A4, A3, E4, E3, E2
+    .byte set_loop1_counter, 13
+@intro_loop:
+    .byte A3, C4, E4, A4 
+    .byte loop1
+    .word @intro_loop
+    .byte A3, E4, E3, E2
     
     .byte duty, $B0
     .byte volume_envelope, ve_battlekid_1b
@@ -80,10 +82,12 @@ song6_square2:
     .byte sixteenth
     .byte rest
 @loop_point:
-    .byte A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4
-    .byte A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4
-    .byte A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4, A3, C4, E4, A4
-    .byte A3, C4, E4, A4, A3, E4, E3, E2
+    .byte set_loop1_counter, 13
+@intro_loop:
+    .byte A3, C4, E4, A4 
+    .byte loop1
+    .word @intro_loop
+    .byte A3, E4, E3, E2
     
     .byte duty, $B0
     .byte volume_envelope, ve_battlekid_2b
@@ -120,9 +124,14 @@ song6_square2:
     
 song6_tri:
     .byte eighth
-    .byte A3, A3, A4, A4, A3, A3, A4, A4
-    .byte G3, G3, G4, G4, G3, G3, G4, G4
-    .byte F3, F3, F4, F4, F3, F3, F4, F4
-    .byte Eb3, Eb3, Eb4, Eb4, Eb3, Eb3, Eb4, Eb4
-    .byte loop
-    .word song6_tri
+    .byte set_loop1_counter, 4              ;repeat 4 times
+@loop:
+    .byte A3, A3, A4, A4, A3, A3, A4, A4    ;series of notes to repeat
+    .byte adjust_note_offset, -2            ;go down a step
+    .byte loop1
+    .word @loop
+    
+    .byte set_note_offset, 0                ;after 4 repeats, reset note offset to 0.
+    .byte loop                              ;infinite loop
+    .word song6_tri                         
+    ;21 bytes

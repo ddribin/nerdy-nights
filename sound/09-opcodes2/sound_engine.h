@@ -7,7 +7,9 @@
 
 	;; Sound engine globals
 	.globalzp	sound_ptr
+	.globalzp	sound_ptr2
 	.global 	sound_disable_flag
+	.global		sound_temp1
 
 	;; Stream globals
 	.global		stream_status
@@ -17,6 +19,8 @@
 	.global		stream_ve
 	.global		stream_ve_index
 	.global		stream_vol_duty
+	.global		stream_loop1
+	.global		stream_note_offset
 
 	;; These are channel constants.
 	SQUARE_1	= $00
