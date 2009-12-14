@@ -160,7 +160,7 @@ sound_play_frame:
 	lda	sound_disable_flag
 	bne	@done		; If disable flag is set, dont' advance a frame
 
-	;; Silence all channels. se_set_apu will set volumen later for all
+	;; Silence all channels. se_set_apu will set volume later for all
 	;; channels that are enabled. The purpose of this subroutine call is
 	;; to silence all channels that aren't used by any streams
 	jsr	se_silence
