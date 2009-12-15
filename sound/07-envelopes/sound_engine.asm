@@ -141,7 +141,7 @@ sound_load:
 	lda	(sound_ptr), y
 	sta	stream_tempo, x
 
-	lda	#$a0
+	lda	#$ff
 	sta	stream_ticker_total, x
 
 	lda	#$01
