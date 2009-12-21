@@ -1,16 +1,18 @@
 ifdef CONFIG_FILE
-CONFIG_FLAGS = --config $(CONFIG_FILE)
+LDCONFIG_FLAGS = --config $(CONFIG_FILE)
+CLCONFIG_FLAGS = -t nes --config $(CONFIG_FILE)
 else
-CONFIG_FLAGS = -t nes
+LDCONFIG_FLAGS = -t nes
+CLCONFIG_FLAGS = -t nes
 endif
 
 
 AS	= ca65
-ASFLAGS	= -l
+ASFLAGS	= -l -t nes
 LD	= ld65
 LDFLAGS	= -m $(PROGRAM).map $(CONFIG_FLAGS)
 CL	= cl65
-CLFLAGS	= -l -t nes
+CLFLAGS	= -l -t nes -g $(CLCONFIG_FLAGS) -m $(PROGRAM).map -Ln $(PROGRAM).lbl
 
 
 OBJECTS = $(SOURCES:.asm=.o)
@@ -18,12 +20,12 @@ OBJECTS = $(SOURCES:.asm=.o)
 all: $(PROGRAM).nes
 
 $(PROGRAM).nes:
-	$(CL) $(CLFLAGS) $(LDFLAGS) -o $@ $(SOURCES)
+	$(CL) $(CLFLAGS) -o $@ $(SOURCES)
 
 open: $(PROGRAM).nes
 	open $(PROGRAM).nes
 
 clean:
-	$(RM) *.o $(PROGRAM).nes $(PROGRAM).map $(SOURCES:.asm=.lst)
+	$(RM) *.o *.lst $(PROGRAM).nes $(PROGRAM).map $(PROGRAM).lbl
 
 .PHONY: all clean open $(PROGRAM).nes
