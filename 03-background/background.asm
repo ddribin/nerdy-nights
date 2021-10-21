@@ -76,7 +76,6 @@ nmi:
   
 .segment "VECTORS"
 
-	.word	0, 0, 0		; Unused, but needed to advance PC to $fffa.
 	;; When an NMI happens (once per frame if enabled) the label nmi:
 	.word	nmi
 	;; When the processor first turns on or is reset, it will jump to the
