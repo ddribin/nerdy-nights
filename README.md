@@ -1,5 +1,3 @@
--*- markdown -*-
-
 The Nerdy Nights ca65 Remix
 ===========================
 
