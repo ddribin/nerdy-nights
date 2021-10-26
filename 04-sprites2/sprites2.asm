@@ -122,7 +122,6 @@ sprites:
   
 .segment "VECTORS"
 
-	.word	0, 0, 0		; Unused, but needed to advance PC to $fffa.
 	
 	;; When an NMI happens (once per frame if enabled), it will
 	;; jump to the label nmi.
