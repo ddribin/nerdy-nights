@@ -1,7 +1,7 @@
 The Nerdy Nights ca65 Remix
 ===========================
 
-The [Nerdy Nights][nn] is a series of tutorials on how to program for the NES on the Nintendo Age forums.  They walk the user through basic graphics and sound applications, with nice descriptions and sample projects.
+The [Nerdy Nights][nn] is a series of tutorials on how to program for the NES, originally posted to the Nintendo Age forums.  They walk the user through basic graphics and sound applications, with nice descriptions and sample projects.
 
 The tutorials where originally written in [NESASM][nesasm] and tested on [FCEU XD SP][fceuxdsp].  However, these work best primarily on Windows, and I use Mac OS X.  This is the Nerdy Nights NES tutorials, ported to ca65, the macro assembler included with the [cc65 compiler][cc65] and tested on [Nestopia][nestopia].  I also prefer that ca65 uses a linker, since it's more flexible than a single source file.
 
@@ -106,8 +106,8 @@ SYMBOLS {
 }
 </pre>
 
-[nn]: http://www.nintendoage.com/faq/nerdy_nights_out.html
-[nesasm]: http://www.nespowerpak.com/nesasm/NESASM3.zip
-[fceuxdsp]: http://www.the-interweb.com/serendipity/exit.php?url_id=627&entry_id=90
-[cc65]: http://www.cc65.org/
+[nn]: https://nerdy-nights.nes.science
+[nesasm]: http://nespowerpak.com/nesasm/
+[fceuxdsp]: http://www.the-interweb.com/serendipity/index.php?/archives/90-Release-of-FCEUXD-SP-1.07.html
+[cc65]: https://cc65.github.io/
 [nestopia]: http://www.bannister.org/software/nestopia.htm
