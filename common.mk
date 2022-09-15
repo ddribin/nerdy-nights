@@ -18,8 +18,8 @@ OBJECTS = $(SOURCES:.asm=.o)
 
 all: $(PROGRAM).nes
 
-$(PROGRAM).nes:
-	$(CA) $(CAFLAGS) $(SOURCES)
+$(PROGRAM).nes: $(OBJECTS)
+#	$(CA) $(CAFLAGS) $(SOURCES)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
 
 open: $(PROGRAM).nes
@@ -27,5 +27,9 @@ open: $(PROGRAM).nes
 
 clean:
 	$(RM) *.o *.lst $(PROGRAM).nes $(PROGRAM).map $(PROGRAM).lbl $(PROGRAM).dbg
+
+%.o: %.asm
+	$(CA) $(CAFLAGS) $<
+
 
 .PHONY: all clean open $(PROGRAM).nes
