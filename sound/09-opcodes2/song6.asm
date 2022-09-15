@@ -122,6 +122,10 @@ song6_square2:
     .byte loop
     .word @loop_point
     
+; Needed because .byte does not allow negative numbers
+; See https://github.com/cc65/cc65/issues/186
+.feature force_range
+
 song6_tri:
     .byte eighth
     .byte set_loop1_counter, 4              ;repeat 4 times

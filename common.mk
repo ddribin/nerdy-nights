@@ -1,6 +1,6 @@
 ifdef CONFIG_FILE
 LDCONFIG_FLAGS = --config $(CONFIG_FILE)
-CACONFIG_FLAGS = -t nes --config $(CONFIG_FILE)
+CACONFIG_FLAGS = -t nes
 else
 LDCONFIG_FLAGS = -t nes
 CACONFIG_FLAGS = -t nes

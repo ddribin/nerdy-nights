@@ -13,6 +13,9 @@ song7_header:
     .word song7_square2 ;pointer to stream
     .byte $FF           ;tempo..very fast tempo
 
+; Needed because .byte does not allow negative numbers
+; See https://github.com/cc65/cc65/issues/186
+.feature force_range
 
 song7_square2:
     .byte set_loop1_counter, $08    ;repeat 8 times

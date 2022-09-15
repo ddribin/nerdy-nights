@@ -48,6 +48,10 @@ song1_square1:
     .byte loop                              ;infinite loop
     .word song1_square1
     
+; Needed because .byte does not allow negative numbers
+; See https://github.com/cc65/cc65/issues/186
+.feature force_range
+
 @lookup_table:
     .byte 2, -1, -1, -1, -1, -1, -2
     .byte -1, -1, 0, -1, 8, -8, 8       ;14 entries long, reverse order
