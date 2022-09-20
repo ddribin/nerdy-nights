@@ -8,28 +8,26 @@ endif
 
 
 AS	= ca65
-ASFLAGS	= -l -t nes
+ASFLAGS	= -g $(CACONFIG_FLAGS)
 LD	= ld65
 LDFLAGS	= -m $(PROGRAM).map -Ln $(PROGRAM).lbl --dbgfile $(PROGRAM).dbg $(LDCONFIG_FLAGS)
-CA = ca65
-CAFLAGS	= -l $(PROGRAM).lst -g $(CACONFIG_FLAGS)
+OPEN ?= open
 
 OBJECTS = $(SOURCES:.asm=.o)
 
 all: $(PROGRAM).nes
 
 $(PROGRAM).nes: $(OBJECTS)
-#	$(CA) $(CAFLAGS) $(SOURCES)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
 
 open: $(PROGRAM).nes
-	open $(PROGRAM).nes
+	$(OPEN) $(PROGRAM).nes
 
 clean:
 	$(RM) *.o *.lst $(PROGRAM).nes $(PROGRAM).map $(PROGRAM).lbl $(PROGRAM).dbg
 
 %.o: %.asm
-	$(CA) $(CAFLAGS) $<
+	$(AS) $(ASFLAGS) -l $(*).lst -o $@ $<
 
 
-.PHONY: all clean open $(PROGRAM).nes
+.PHONY: all clean open
